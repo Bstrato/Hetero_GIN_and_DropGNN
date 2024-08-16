@@ -1,0 +1,18 @@
+DBLP Dataset Statistics:
+------------------------
+Author nodes: 4057, Features: 334
+Paper nodes: 14328, Features: 4231
+Term nodes: 7723, Features: 50
+Conference nodes: 20, Features: 0
+Author-Paper edges: 19645
+Paper-Conference edges: 14328
+Conference-Term edges: 24175
+Number of author classes: 4
+Number of authors in train set: 400
+Number of authors in val set: 400
+Number of authors in test set: 3257
+
+Edge types in the dataset:
+author-paper: 19645 edges
+paper-conference: 14328 edges
+conference-term: 24175 edges
