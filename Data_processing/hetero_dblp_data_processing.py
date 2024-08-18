@@ -32,7 +32,7 @@ class DBLP(InMemoryDataset):
         os.makedirs(self.raw_dir, exist_ok=True)
         os.makedirs(self.processed_dir, exist_ok=True)
 
-        super().__init__(root, transform, pre_transform, force_reload=force_reload)
+        super().__init__(root, transform, pre_transform)
 
         if not self._check_exists() or force_reload:
             self.download()
@@ -168,7 +168,6 @@ class DBLP(InMemoryDataset):
                 num_split = self.data['author'][f'{split}_mask'].sum().item()
                 print(f"Number of authors in {split} set: {num_split}")
 
-"""
 if __name__ == "__main__":
     root = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data_hetero_dblp')
     print(f"Dataset will be stored in: {root}")
@@ -192,4 +191,3 @@ if __name__ == "__main__":
         traceback.print_exc()
 
 print("Script ended")
-"""

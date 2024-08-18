@@ -258,36 +258,46 @@ def main(args):
 
     plot_metrics(metrics, args)
 
+transform_to_path = {
+    None: './DBLP/processed/original_db_graph_data.pt',
+    'reverse_edges': './dblp_reversed/processed/original_db_graph_data.pt'
+}
+
 if __name__ == '__main__':
-    parser = HyperOptArgumentParser(strategy='grid_search')
-    parser.opt_list('--dropout', type=float, default=0.5, tunable=True, options=[0.5, 0.0])
-    parser.opt_list('--batch_size', type=int, default=32, tunable=True, options=[32, 128])
-    parser.opt_list('--hidden_units', type=int, default=64, tunable=True, options=[16, 32, 64])
-    parser.add_argument('--drop_gnn', action='store_true', default=False)
-    parser.add_argument('--verbose', action='store_true', default=False)
-    parser.add_argument('--slurm', action='store_true', default=False)
-    parser.add_argument('--grid_search', action='store_true', default=False)
-    parser.add_argument('--data_path', type=str, default='./data_hetero_dblp/processed/hetero_dblp_data.pt')
+    for transform in [None, 'reverse_edges']:
 
-    args = parser.parse_args()
+        print("Current Transformation: ", transform)
+        path = transform_to_path[transform]
 
-    if args.slurm:
-        print('Launching SLURM jobs')
-        cluster = SlurmCluster(
-            hyperparam_optimizer=args,
-            log_path='slurm_log/',
-            python_cmd='python'
-        )
-        cluster.job_time = '24:00:00'
-        cluster.memory_mb_per_node = '12G'
-        job_name = f'DBLP{"_DropGNN" if args.drop_gnn else ""}'
-        cluster.per_experiment_nb_cpus = 2
-        cluster.per_experiment_nb_gpus = 1
-        cluster.optimize_parallel_cluster_gpu(main, nb_trials=None, job_name=job_name, job_display_name='DBLP')
-    elif args.grid_search:
-        for hparam_trial in args.trials(None):
-            main(hparam_trial)
-    else:
-        main(args)
+        parser = HyperOptArgumentParser(strategy='grid_search')
+        parser.opt_list('--dropout', type=float, default=0.5, tunable=True, options=[0.5, 0.0])
+        parser.opt_list('--batch_size', type=int, default=32, tunable=True, options=[32, 128])
+        parser.opt_list('--hidden_units', type=int, default=64, tunable=True, options=[16, 32, 64])
+        parser.add_argument('--drop_gnn', action='store_true', default=False)
+        parser.add_argument('--verbose', action='store_true', default=False)
+        parser.add_argument('--slurm', action='store_true', default=False)
+        parser.add_argument('--grid_search', action='store_true', default=False)
+        parser.add_argument('--data_path', type=str, default=path)
 
-    print('Finished', flush=True)
+        args = parser.parse_args()
+
+        if args.slurm:
+            print('Launching SLURM jobs')
+            cluster = SlurmCluster(
+                hyperparam_optimizer=args,
+                log_path='slurm_log/',
+                python_cmd='python'
+            )
+            cluster.job_time = '24:00:00'
+            cluster.memory_mb_per_node = '12G'
+            job_name = f'DBLP{"_DropGNN" if args.drop_gnn else ""}'
+            cluster.per_experiment_nb_cpus = 2
+            cluster.per_experiment_nb_gpus = 1
+            cluster.optimize_parallel_cluster_gpu(main, nb_trials=None, job_name=job_name, job_display_name='DBLP')
+        elif args.grid_search:
+            for hparam_trial in args.trials(None):
+                main(hparam_trial)
+        else:
+            main(args)
+
+        print('Finished', flush=True)
