@@ -9,6 +9,7 @@ import numpy as np
 import torch
 import scipy.sparse as sp
 from itertools import product
+from transformations.transformations import ReverseEdges
 
 from torch_geometric.data import (
     HeteroData,
@@ -25,7 +26,7 @@ class DBLP(InMemoryDataset):
             self,
             root: str,
             transform: Optional[Callable] = None,
-            pre_transform: Optional[Callable] = None,
+            pre_transform: Optional[Callable] = ReverseEdges(),
             force_reload: bool = False,
     ):
         self.root = root
@@ -150,7 +151,7 @@ class DBLP(InMemoryDataset):
                 print(f"Number of authors in {split} set: {num_split}")
 
 if __name__ == "__main__":
-    root = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'DBLP')
+    root = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'dblp_reversed')
     print(f"Dataset will be stored in: {root}")
     try:
         dataset = DBLP(root=root)
